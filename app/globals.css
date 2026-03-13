@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0f0f12;
+  --surface: #1a1a1f;
+  --border: #2d2d35;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --text: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --success: #22c55e;
+  --error: #ef4444;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.card {
+  @apply rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5;
+}
+
+.btn-primary {
+  @apply rounded-lg bg-[var(--accent)] px-4 py-2 font-medium text-white transition hover:bg-[var(--accent-hover)];
+}
+
+.btn-secondary {
+  @apply rounded-lg border border-[var(--border)] bg-transparent px-4 py-2 font-medium transition hover:bg-white/5;
+}
+
+textarea, input[type="text"] {
+  @apply w-full rounded-lg border border-[var(--border)] bg-black/30 px-3 py-2 text-sm focus:border-[var(--accent)] focus:outline-none;
+}
