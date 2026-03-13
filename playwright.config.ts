@@ -16,6 +16,7 @@ export default defineConfig({
     trace: 'on',
     video: 'on',
     screenshot: 'on',
+    actionTimeout: 15000,
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 });

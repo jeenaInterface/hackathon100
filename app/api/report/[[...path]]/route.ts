@@ -14,11 +14,16 @@ const REPORT_FONT_STYLES = `
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style id="intellitest-report-styles">
-    body, .report, [class*="report"] { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    body, .report, [class*="report"], #root { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important; }
     body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; letter-spacing: 0.01em; }
-    a, span, div, p, h1, h2, h3, td, th, li { font-family: inherit !important; }
-    code, pre, .mono, [class*="code"] { font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important; }
+    a, span, div, p, h1, h2, h3, h4, td, th, li, button { font-family: inherit !important; }
+    code, pre, .mono, [class*="code"], [class*="trace"] { font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important; }
   </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      try { if (document.title && !document.title.includes('IntelliTest')) document.title = 'IntelliTest – Test Report'; } catch(e) {}
+    });
+  </script>
 `;
 
 function injectIntelliTestLogo(html: string): string {
@@ -33,19 +38,53 @@ function applyReportEnhancements(html: string): string {
   return html;
 }
 
-function rewriteReportAssetPaths(html: string): string {
-  return html
+function escapeForRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function rewriteReportAssetPaths(content: string): string {
+  let out = content
+    .replace(/href="\/data\//g, 'href="data/')
+    .replace(/src="\/data\//g, 'src="data/')
     .replace(/href="\.\.\/test-results\//g, 'href="test-results/')
     .replace(/src="\.\.\/test-results\//g, 'src="test-results/')
     .replace(/href='\.\.\/test-results\//g, "href='test-results/")
-    .replace(/src='\.\.\/test-results\//g, "src='test-results/");
+    .replace(/src='\.\.\/test-results\//g, "src='test-results/")
+    .replace(/"\/data\//g, '"data/')
+    .replace(/"\.\.\/test-results\//g, '"test-results/')
+    .replace(/\.\.\\test-results\\/g, 'test-results/')
+    .replace(/\.\.\/test-results\//g, 'test-results/');
+
+  const reportBaseBack = REPORT_BASE;
+  const reportBaseFwd = REPORT_BASE.replace(/\\/g, '/');
+  const testResultsFwd = TEST_RESULTS_BASE.replace(/\\/g, '/');
+
+  [reportBaseBack, reportBaseFwd, reportBaseBack.replace(/\//g, '\\'), reportBaseFwd.replace(/\//g, '\\')].forEach((base) => {
+    if (!base) return;
+    const escaped = escapeForRegex(base);
+    const re = new RegExp(escaped.replace(/\\\\/g, '[\\\\/]'), 'g');
+    out = out.replace(re, '');
+  });
+
+  [TEST_RESULTS_BASE, testResultsFwd].forEach((base) => {
+    const escaped = escapeForRegex(base);
+    const re = new RegExp(escaped.replace(/\\\\/g, '[\\\\/]'), 'g');
+    out = out.replace(re, 'test-results/');
+  });
+
+  out = out.replace(/file:\/\/\/[^"']*playwright-report[/\\]/gi, '');
+  out = out.replace(/file:\/\/\/[^"']*test-results[/\\]/gi, 'test-results/');
+
+  out = out.replace(/(["'])data\\/g, '$1data/').replace(/(["'])test-results\\/g, '$1test-results/');
+  return out;
 }
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ path?: string[] }> }
 ) {
-  const pathSegments = (await params).path ?? ['index.html'];
+  let pathSegments = (await params).path ?? ['index.html'];
+  pathSegments = pathSegments.map((p) => p.replace(/\\/g, '/'));
   const isTestResults = pathSegments[0] === 'test-results';
   const baseDir = isTestResults ? TEST_RESULTS_BASE : REPORT_BASE;
   const relativeSegments = isTestResults ? pathSegments.slice(1) : pathSegments;
@@ -84,6 +123,9 @@ export async function GET(
     html = rewriteReportAssetPaths(html);
     html = applyReportEnhancements(html);
     content = html;
+  } else if (!isTestResults && (ext === '.json' || ext === '.js')) {
+    const str = content.toString('utf-8');
+    content = typeof content === 'string' ? rewriteReportAssetPaths(str) : Buffer.from(rewriteReportAssetPaths(str), 'utf-8');
   }
   const types: Record<string, string> = {
     '.html': 'text/html',
