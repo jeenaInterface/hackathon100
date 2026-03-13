@@ -1,8 +1,11 @@
 /**
  * Converts business scenario text to Playwright test code.
  * Generates tests with test.step() for each logical step, scenario attachment, and screenshots.
+ * @param scenarioContent - Business scenario text
+ * @param baseUrl - Optional application URL (e.g. https://example.com) for page.goto()
  */
-export function scenarioToPlaywrightTemplate(scenarioContent: string): string {
+export function scenarioToPlaywrightTemplate(scenarioContent: string, baseUrl?: string): string {
+  const gotoArg = baseUrl?.trim() ? JSON.stringify(baseUrl.trim()) : "'/'";
   const lines = scenarioContent
     .split(/\r?\n/)
     .map((s) => s.trim())
@@ -33,7 +36,7 @@ test.describe('Business scenario', () => {
     });
 
     await test.step('1. Load application', async () => {
-      await page.goto('/');
+      await page.goto(${gotoArg});
       const screenshot = await page.screenshot();
       await testInfo.attach('Initial page', { body: screenshot, contentType: 'image/png' });
     });

@@ -1,18 +1,19 @@
-# Business Scenario → Playwright Test Generator
+# IntelliTest
 
-Convert business scenarios to Playwright tests, run them via Copilot (MCP), and view HTML reports.
+Enter application URL and business scenario to generate **manual test cases** (view in UI, download as Excel) or **Playwright** automated tests. Run tests and view HTML reports with IntelliTest branding.
 
 ## Features
 
-1. **Application UI** – Web interface for entering url, uploading scenarios then click buttonG(enerate test case) click 
-2. **Upload business scenarios** – File upload or paste text (e.g. Gherkin, plain English)
+1. **Application UI** – Enter application URL and business scenario; generate manual test cases or Playwright tests
+2. **Manual test cases** – Button to generate manual test cases from scenario; view in UI; **Download as Excel** (separate function)
+3. **Upload business scenarios** – Paste text (e.g. Gherkin, UAC, plain English) and save
 3. **Copilot integration (MCP)** – Uses your installed MCP server to convert scenarios and run tests
 4. **Scenario → Playwright** – Converts business scenarios to Playwright test code
 5. **Run tests via Copilot** – Trigger test execution through the app or Copilot prompt
 6. **HTML report** – Playwright HTML reporter; view results in the UI
 
 ## Project structure
-k
+
 ```
 hackaton/
 ├── app/                    # Next.js App Router

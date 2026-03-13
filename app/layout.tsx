@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Business Scenario → Playwright',
-  description: 'Upload scenarios, convert to Playwright tests, run via Copilot, view HTML reports',
+  title: 'IntelliTest – Generate manual & automated test cases',
+  description: 'Enter application URL and business scenario to generate manual test cases (Excel) or Playwright tests. IntelliTest.',
 };
 
 export default function RootLayout({

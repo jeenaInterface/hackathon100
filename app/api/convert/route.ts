@@ -17,7 +17,7 @@ function ensureTestsDir() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { scenarioId } = body;
+    const { scenarioId, baseUrl } = body;
     if (!scenarioId) {
       return NextResponse.json({ error: 'scenarioId required' }, { status: 400 });
     }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     if (mcpResult.success && mcpResult.testCode) {
       testCode = mcpResult.testCode;
     } else {
-      testCode = scenarioToPlaywrightTemplate(scenario.content);
+      testCode = scenarioToPlaywrightTemplate(scenario.content, typeof baseUrl === 'string' ? baseUrl : undefined);
     }
 
     ensureTestsDir();

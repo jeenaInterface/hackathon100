@@ -7,7 +7,7 @@
 - **Tailwind CSS** for layout and dark theme
 - **Sections:**
   - **Upload** – Text area + optional name to add business scenarios (paste or type)
-  - **Scenarios & tests** – List of saved scenarios with actions: Convert to Playwright, View test, Run test, Open HTML report
+  - **Scenarios & tests** – List of saved scenarios with actions: Convert to Playwright, View test script, Run test, Open HTML report
   - **Copilot prompt** – Suggested prompt text so the user (or Copilot) can run a test by `testId`
 
 ### 2. Input to Upload Business Scenarios ✅
